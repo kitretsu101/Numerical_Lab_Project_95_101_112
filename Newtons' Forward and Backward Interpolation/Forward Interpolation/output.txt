@@ -1,0 +1,2 @@
+value of y at 4 is : 165
+value of y at 52 is : 0.788003
