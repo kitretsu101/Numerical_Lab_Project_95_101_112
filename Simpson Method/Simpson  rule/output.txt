@@ -1,0 +1,11 @@
+--- Numerical Integration Results (Simpson's Rules) ---
+Function: f(x) = sin^5(x) + 4*sin^4(x) + 1
+Limits: a = 0.0000000000, b = 3.1415900000
+Number of Intervals (N) = 6
+Interval width (h) = 0.5235983333
+--------------------------------------------------------
+Simpson's 1/3 Rule (N is even):
+Integral Estimate: 8.9358309110
+--------------------------------------------------------
+Simpson's 3/8 Rule (N is multiple of 3):
+Integral Estimate: 8.6610423801

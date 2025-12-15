@@ -1,0 +1,5 @@
+Search Interval: [-3.7417, 3.7417]
+
+Root 1 = 1.0000   Iterations = 8
+Root 2 = 1.9999   Iterations = 2
+Root 3 = 3.0000   Iterations = 8
