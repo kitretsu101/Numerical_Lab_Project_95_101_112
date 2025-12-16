@@ -1,0 +1,5 @@
+Initial x0: 0
+Initial y0: 1
+Final x: 2
+Step h: 0.1
+The value of y at x is: 1.10364
