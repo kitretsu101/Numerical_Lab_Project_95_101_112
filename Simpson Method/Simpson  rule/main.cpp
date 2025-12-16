@@ -7,7 +7,7 @@ double f(double x)
     return pow(sin_x, 5) + 4.0 * pow(sin_x, 4) + 1.0;
 }
 
-double simpsons_one_third(double a, double b, int N)
+double simp_one_third(double a, double b, int N)
 {
     if (N % 2 != 0)
     {
@@ -79,7 +79,7 @@ void run_simpsons_rules()
     }
     inputFile.close();
 
-    double integral_1_3 = simpsons_one_third(a, b, N);
+    double integral_1_3 = simp_one_third(a, b, N);
     double integral_3_8 = simpsons_three_eighths(a, b, N);
 
     ofstream outputFile("output.txt");
