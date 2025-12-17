@@ -1,0 +1,11 @@
+System size: 3
+Solution type: Unique solution
+x1 = 2
+x2 = 3
+x3 = -1
+
+System size: 2
+Solution type: No solution
+
+System size: 2
+Solution type: Infinite solutions
