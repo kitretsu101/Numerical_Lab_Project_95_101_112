@@ -16,7 +16,12 @@
     - [Code](#gauss-jordan-code)
     - [Input](#gauss-jordan-input)
     - [Output](#gauss-jordan-output)
-   
+- [Solution of Non-Linear Equations](#solution-of-non-linear-equations)
+  - [Newton Raphson Method](#newton-raphson-method)
+    - [Theory](#newton-raphson-theory)
+    - [Code](#newton-raphson-code)
+    - [Input](#newton-raphson-input)
+    - [Output](#newton-raphson-output)
 ## Solution of Linear Equations
 ### Matrix Inversion
 #### Matrix Inversion Theory
@@ -191,10 +196,10 @@ The matrix is singular. Not invertible
 #### Gauss Elimination Theory
 The Gauss Elimination Method is a numerical technique used to solve a system of linear equations. The main idea is to eliminate variables step by step and convert the system into an upper triangular matrix, from which the solution can be easily obtained using backward substitution.
 
-It works on the augmented matrix [A | b] formed from the system A x = b where
-A is an n × n matrix
-x is the unknown vector
-b is the constant vector
+It works on the augmented matrix [A | b] formed from the system A x = b where,
+A is an n × n matrix,
+x is the unknown vector,
+b is the constant vector.
 
 To get the upper triangular matrix forward elimination is have to be done. To do this,
 For each pivot row k = 1 to n-1:
@@ -491,3 +496,173 @@ Solution type: No solution
 System size: 2
 Solution type: Infinite solutions
 ```
+
+## Solution of Non-Linear Equations
+### Newton Raphson Method
+#### Newton Raphson Theory
+The Newton–Raphson Method is an iterative numerical technique used to find roots of nonlinear equations. It starts from an initial guess and improves the approximation using the derivative of the function.
+The method is based on the tangent line approximation.
+Given:
+f(x) = 0 where f(x) is a polynomial.
+
+The iterative formula for this method is:
+x[n+1] = x[n] - f(x[n]) / f'(x[n]).
+
+Convergence Condition:
+The iteration is repeated until:
+|x[n+1] - x[n]| < ε
+where ε is the permissible error / tolarance.
+
+If the process is repeated in a specific interval for a specific step size, all the roots can be determined for tha corresponding polynomial.
+
+#### Newton Raphson Code
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+double poly(const vector<double>&c,double x)
+{
+    double s=0;
+    int n=c.size();
+    for(int i=0;i<n;i++)s+=c[i]*pow(x,n-1-i);
+    return s;
+}
+
+vector<double> derivative(const vector<double>&c)
+{
+    int n=c.size();
+    vector<double>d;
+    for(int i=0;i<n-1;i++)
+        d.push_back(c[i]*(n-1-i));
+    return d;
+}
+
+void printPoly(const vector<double>& c,ostream& out)
+{
+    int n=c.size();
+    for(int i=0;i<n;i++)
+    {
+        if(c[i]==0)continue;
+        if(i>0 && c[i]>0)out<<" + ";
+        if(c[i]<0)out<<" - ";
+        if(abs(c[i])!=1 || i==n-1)out<<abs(c[i]);
+        if(i<n-1)
+        {
+            out<<"x";
+            if(n-1-i>1)out<<"^"<<n-1-i;
+        }
+    }
+    out<<endl;
+}
+
+int main()
+{
+    ifstream fin("input.txt");
+    ofstream fout("output.txt");
+
+    if(!fin)
+    {
+        cout<<"Input file not found"<<endl;
+        return 0;
+    }
+
+    int degree;
+    fin>>degree;
+
+    vector<double>coef(degree+1);
+    for(int i=0;i<=degree;i++)fin>>coef[i];
+
+    double a,b,step,tol;
+    fin>>a>>b>>step>>tol;
+
+    vector<double>dcoef=derivative(coef);
+    vector<double>roots;
+
+    for(double x=a;x<=b;x+=step)
+    {
+        double x0=x;
+
+        for(int i=0;i<100;i++)
+        {
+            double f=poly(coef,x0);
+            double df=poly(dcoef,x0);
+
+            if(fabs(df)<1e-8)break;
+
+            double x1=x0-f/df;
+
+            if(fabs(x1-x0)<tol)
+            {
+                if(x1>=a && x1<=b)
+                {
+                    bool exists=false;
+                    for(double r:roots)
+                        if(fabs(r-x1)<tol) exists=true;
+
+                    if(!exists) roots.push_back(x1);
+                }
+                break;
+            }
+            x0=x1;
+        }
+    }
+
+    cout<<"Degree of Polynomial: "<<degree<<endl;
+    fout<<"Degree of Polynomial: "<<degree<<endl;
+
+    cout<<"Polynomial: ";
+    fout<<"Polynomial: ";
+    printPoly(coef,cout);
+    printPoly(coef,fout);
+
+    cout<<"Derivative: ";
+    fout<<"Derivative: ";
+    printPoly(dcoef,cout);
+    printPoly(dcoef,fout);
+
+    if(roots.empty())
+    {
+        cout<<"No roots found in given range"<<endl;
+        fout<<"No roots found in given range"<<endl;
+    }
+    else
+    {
+        cout<<"Roots found:"<<endl;
+        fout<<"Roots found:"<<endl;
+        for(int i=0;i<roots.size();i++)
+        {
+            cout<<"Root "<<i+1<<": "<<roots[i]<<endl;
+            fout<<"Root "<<i+1<<": "<<roots[i]<<endl;
+        }
+    }
+
+    fin.close();
+    fout.close();
+    return 0;
+}
+```
+
+#### Newton Raphson Input
+```
+4
+1 0 -5 0 4
+-5 5
+0.5
+0.0001
+```
+
+#### Newton Raphson Output
+```
+Degree of Polynomial: 4
+Polynomial: x^4 - 5x^2 + 4
+Derivative: 4x^3 - 10x
+Roots found:
+Root 1: -2
+Root 2: -1
+Root 3: 1
+Root 4: 2
+```
+
+
+
+
