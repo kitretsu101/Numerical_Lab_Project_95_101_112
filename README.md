@@ -11,6 +11,11 @@
     - [Code](#gauss-elimination-code)
     - [Input](#gauss-elimination-input)
     - [Output](#gauss-elimination-output)
+  - [Gauss Jordan Elimination Method](#gauss-jordan-elimination-method)
+    - [Theory](#gauss-jordan-theory)
+    - [Code](#gauss-jordan-code)
+    - [Input](#gauss-jordan-input)
+    - [Output](#gauss-jordan-output)
    
 ## Solution of Linear Equations
 ### Matrix Inversion
@@ -193,22 +198,22 @@ b is the constant vector
 
 To get the upper triangular matrix forward elimination is have to be done. To do this,
 For each pivot row k = 1 to n-1:
-factor = a[i][k] / a[k][k]
+factor = a[i][k] / a[k][k].
 
 To update the rows:
-a[i][j] = a[i][j] - factor * a[k][j]
+a[i][j] = a[i][j] - factor * a[k][j],
 b[i]    = b[i]    - factor * b[k]
 where:
-i = k+1 to n
-j = k to n
+i = k+1 to n,
+j = k to n.
 This process transforms the matrix into an upper triangular form.
 
-Once the matrix is upper triangular, the unknowns are solved using backward sunstitution
-x[n] = b[n] / a[n][n]
+Once the matrix is upper triangular, the unknowns are solved using backward sunstitution.
+x[n] = b[n] / a[n][n],
 x[i] = ( b[i] - Σ(a[i][j] * x[j]) ) / a[i][i]
 where:
-j = i+1 to n
-i = n-1, n-2, ..., 1
+j = i+1 to n,
+i = n-1, n-2, ..., 1.
 The x vector is the solution of the system.
 
 #### Gauss Elimination Code
@@ -304,6 +309,7 @@ int main()
     return 0;
 }
 ```
+
 #### Gauss Elimination Input
 ```
 3
@@ -320,7 +326,158 @@ y
 2 2 4
 n
 ```
+
 #### Gauss Elimination Output
+```
+System size: 3
+Solution type: Unique solution
+x1 = 2
+x2 = 3
+x3 = -1
+
+System size: 2
+Solution type: No solution
+
+System size: 2
+Solution type: Infinite solutions
+```
+
+### Gauss Jordan Elimination Method
+#### Gauss Jordan Theory
+The Gauss–Jordan Method is an extension of Gaussian elimination. Instead of stopping at an upper triangular matrix, it continues elimination to convert the matrix into Reduced Row Echelon Form (RREF). This allows the solution to be obtained directly, without backward substitution.
+Given:
+A x = b where,
+A is an n × n matrix,
+x is the unknown vector,
+b is the constant vector.
+
+The augmented matrix [A | b] is transformed into:
+[I | x],
+where I is the identity matrix.
+
+For each pivot element a[k][k]:
+1. Normalize the pivot row
+Row[k] = Row[k] / a[k][k].
+
+2. Eliminate all other elements in the pivot column
+a[i][j] = a[i][j] - a[i][k] * a[k][j]
+for:
+i ≠ k
+
+After reaching RREF, the vector x would the solution of the system.
+
+#### Gauss Jordan Code
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int type(vector<vector<double>>&a,int n)
+{
+    int r=0,c=0;
+    for(int i=0;i<n;i++){
+        bool nz=false;
+        for(int j=0;j<n;j++)
+            if(fabs(a[i][j])>1e-9) nz=true;
+        if(nz) r++;
+        else if(fabs(a[i][n])>1e-9) return 0;
+    }
+    for(int j=0;j<n;j++){
+        for(int i=0;i<n;i++)
+            if(fabs(a[i][j])>1e-9){
+                c++;
+                break;
+            }
+    }
+    if(r==c) return 1;
+    return 2;
+}
+
+int main()
+{
+    ifstream fin("input.txt");
+    ofstream fout("output.txt");
+
+    if(!fin){
+        cout<<"input.txt not found"<<endl;
+        return 0;
+    }
+
+    while(true)
+    {
+        int n;
+        fin>>n;
+
+        vector<vector<double>>a(n,vector<double>(n+1));
+        for(int i=0;i<n;i++)
+            for(int j=0;j<=n;j++)
+                fin>>a[i][j];
+
+        for(int k=0;k<n;k++){
+            int mx=k;
+            for(int i=k+1;i<n;i++)
+                if(fabs(a[i][k])>fabs(a[mx][k])) mx=i;
+            swap(a[k],a[mx]);
+
+            if(fabs(a[k][k])<1e-9) continue;
+
+            double div=a[k][k];
+            for(int j=0;j<=n;j++)
+                a[k][j]/=div;
+
+            for(int i=0;i<n;i++){
+                if(i==k) continue;
+                double f=a[i][k];
+                for(int j=0;j<=n;j++)
+                    a[i][j]-=f*a[k][j];
+            }
+        }
+
+        int t=type(a,n);
+
+        fout<<"System size: "<<n<<endl;
+
+        if(t==0){
+            fout<<"Solution type: No solution"<<endl;
+        }
+        else if(t==2){
+            fout<<"Solution type: Infinite solutions"<<endl;
+        }
+        else{
+            fout<<"Solution type: Unique solution"<<endl;
+            for(int i=0;i<n;i++)
+                fout<<"x"<<i+1<<" = "<<a[i][n]<<endl;
+        }
+
+        char ch;
+        fin>>ch;
+        if(ch!='y' && ch!='Y') break;
+        fout<<endl;
+    }
+
+    fin.close();
+    fout.close();
+    return 0;
+}
+```
+
+#### Gauss Jordan Input
+```
+3
+2 1 -1 8
+-3 -1 2 -11
+-2 1 2 -3
+y
+2
+1 1 2
+2 2 5
+y
+2
+1 1 2
+2 2 4
+n
+```
+
+#### Gauss Jordan Output
 ```
 System size: 3
 Solution type: Unique solution
