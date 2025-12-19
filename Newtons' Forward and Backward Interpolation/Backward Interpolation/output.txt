@@ -1,0 +1,2 @@
+value of y at 1925 is : 96.8368
+value of y at 33 is : 33.2747
