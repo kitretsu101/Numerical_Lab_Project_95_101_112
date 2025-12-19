@@ -1,0 +1,1 @@
+value of y at 2 is : 0.628762
