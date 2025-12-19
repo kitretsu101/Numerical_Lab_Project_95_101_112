@@ -6,6 +6,11 @@
     - [Code](#matrix-inversion-code)
     - [Input](#matrix-inversion-input)
     - [Output](#matrix-inversion-output)
+  - [Gauss Elimination Method](#gauss-elimination-method)
+    - [Theory](#gauss-elimination-theory)
+    - [Code](#gauss-elimination-code)
+    - [Input](#gauss-elimination-input)
+    - [Output](#gauss-elimination-output)
    
 ## Solution of Linear Equations
 ### Matrix Inversion
@@ -176,11 +181,6 @@ int main()
 
 The matrix is singular. Not invertible
 ```
-  - [Gauss Elimination Method](#gauss-elimination-method)
-    - [Theory](#gauss-elimination-theory)
-    - [Code](#gauss-elimination-code)
-    - [Input](#gauss-elimination-input)
-    - [Output](#gauss-elimination-output)
 
 ### Gauss Elimination Method
 #### Gauss Elimination Theory
