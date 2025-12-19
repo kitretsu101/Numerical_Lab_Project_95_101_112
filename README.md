@@ -687,7 +687,7 @@ x[n+1] = x[n] - f(x[n]) * (x[n] - x[n-1])
                  / (f(x[n]) - f(x[n-1])).
 3. Repeat the iteration until the convergence condition is satisfied.
 
-Convergence Condition
+Convergence Condition:
 The iteration is stopped when:
 |x[n+1] - x[n]| < ε..
 where ε is the allowable error / tolerance.
