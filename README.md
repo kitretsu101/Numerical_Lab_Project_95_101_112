@@ -176,4 +176,161 @@ int main()
 
 The matrix is singular. Not invertible
 ```
+  - [Gauss Elimination Method](#gauss-elimination-method)
+    - [Theory](#gauss-elimination-theory)
+    - [Code](#gauss-elimination-code)
+    - [Input](#gauss-elimination-input)
+    - [Output](#gauss-elimination-output)
 
+### Gauss Elimination Method
+#### Gauss Elimination Theory
+The Gauss Elimination Method is a numerical technique used to solve a system of linear equations. The main idea is to eliminate variables step by step and convert the system into an upper triangular matrix, from which the solution can be easily obtained using backward substitution.
+
+It works on the augmented matrix [A | b] formed from the system A x = b where
+A is an n × n matrix
+x is the unknown vector
+b is the constant vector
+
+To get the upper triangular matrix forward elimination is have to be done. To do this,
+For each pivot row k = 1 to n-1:
+factor = a[i][k] / a[k][k]
+
+To update the rows:
+a[i][j] = a[i][j] - factor * a[k][j]
+b[i]    = b[i]    - factor * b[k]
+where:
+i = k+1 to n
+j = k to n
+This process transforms the matrix into an upper triangular form.
+
+Once the matrix is upper triangular, the unknowns are solved using backward sunstitution
+x[n] = b[n] / a[n][n]
+x[i] = ( b[i] - Σ(a[i][j] * x[j]) ) / a[i][i]
+where:
+j = i+1 to n
+i = n-1, n-2, ..., 1
+The x vector is the solution of the system.
+
+#### Gauss Elimination Code
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int type(vector<vector<double>>&a,int n)
+{
+    int r=0,c=0;
+    for(int i=0;i<n;i++){
+        bool nz=false;
+        for(int j=0;j<n;j++)
+            if(fabs(a[i][j])>1e-9) nz=true;
+        if(nz) r++;
+        else if(fabs(a[i][n])>1e-9) return 0;
+    }
+    for(int j=0;j<n;j++){
+        for(int i=0;i<n;i++)
+            if(fabs(a[i][j])>1e-9){
+                c++;
+                break;
+            }
+    }
+    if(r==c) return 1;
+    return 2;
+}
+
+int main()
+{
+    ifstream fin("input.txt");
+    ofstream fout("output.txt");
+    if(!fin){
+        cout<<"input.txt not found"<<endl;
+        return 0;
+    }
+
+    while(true)
+    {
+        int n;
+        fin>>n;
+        vector<vector<double>>a(n,vector<double>(n+1));
+        for(int i=0;i<n;i++)
+            for(int j=0;j<=n;j++)
+                fin>>a[i][j];
+
+        for(int k=0;k<n;k++){
+            int mx=k;
+            for(int i=k+1;i<n;i++)
+                if(fabs(a[i][k])>fabs(a[mx][k])) mx=i;
+            swap(a[k],a[mx]);
+
+            if(fabs(a[k][k])<1e-9) continue;
+
+            for(int i=k+1;i<n;i++){
+                double f=a[i][k]/a[k][k];
+                for(int j=k;j<=n;j++)
+                    a[i][j]-=f*a[k][j];
+            }
+        }
+
+        int t=type(a,n);
+
+        fout<<"System size: "<<n<<endl;
+
+        if(t==0){
+            fout<<"Solution type: No solution"<<endl;
+        }
+        else if(t==2){
+            fout<<"Solution type: Infinite solutions"<<endl;
+        }
+        else{
+            fout<<"Solution type: Unique solution"<<endl;
+            vector<double>x(n);
+            for(int i=n-1;i>=0;i--){
+                x[i]=a[i][n];
+                for(int j=i+1;j<n;j++)
+                    x[i]-=a[i][j]*x[j];
+                x[i]/=a[i][i];
+            }
+            for(int i=0;i<n;i++)
+                fout<<"x"<<i+1<<" = "<<x[i]<<endl;
+        }
+
+        char ch;
+        fin>>ch;
+        if(ch!='y' && ch!='Y') break;
+        fout<<endl;
+    }
+
+    fin.close();
+    fout.close();
+    return 0;
+}
+```
+#### Gauss Elimination Input
+```
+3
+2 1 -1 8
+-3 -1 2 -11
+-2 1 2 -3
+y
+2
+1 1 2
+2 2 5
+y
+2
+1 1 2
+2 2 4
+n
+```
+#### Gauss Elimination Output
+```
+System size: 3
+Solution type: Unique solution
+x1 = 2
+x2 = 3
+x3 = -1
+
+System size: 2
+Solution type: No solution
+
+System size: 2
+Solution type: Infinite solutions
+```
