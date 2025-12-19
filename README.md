@@ -22,6 +22,11 @@
     - [Code](#newton-raphson-code)
     - [Input](#newton-raphson-input)
     - [Output](#newton-raphson-output)
+  - [Secant Method](#secant-method)
+    - [Theory](#secant-theory)
+    - [Code](#secant-code)
+    - [Input](#secant-input)
+    - [Output](#secant-output)
 ## Solution of Linear Equations
 ### Matrix Inversion
 #### Matrix Inversion Theory
@@ -511,9 +516,9 @@ x[n+1] = x[n] - f(x[n]) / f'(x[n]).
 Convergence Condition:
 The iteration is repeated until:
 |x[n+1] - x[n]| < ε
-where ε is the permissible error / tolarance.
+where ε is the permissible error / tolerance.
 
-If the process is repeated in a specific interval for a specific step size, all the roots can be determined for tha corresponding polynomial.
+If the process is repeated in a specific interval for a specific step size, all the roots can be determined for the corresponding polynomial.
 
 #### Newton Raphson Code
 ```cpp
@@ -663,6 +668,136 @@ Root 3: 1
 Root 4: 2
 ```
 
+### Secant Method
+#### Secant Theory
+The Secant Method is an iterative numerical technique used to find the root of a non-linear equation. It is similar to the Newton–Raphson method, but does not require the derivative of the function.
+Instead of using the slope of a tangent, it approximates the slope using a secant line passing through two nearby points on the function.
 
+Given a nonlinear equation:
+f(x) = 0 where f(x) is a polynomial.
 
+The goal is to determine a root x* such that:
+f(x*) = 0.
+
+Steps:
+1. Choose two initial approximations x₀ and x₁ such that:
+f(x₀) ≠ f(x₁).
+2. Compute the next approximation using the secant formula:
+x[n+1] = x[n] - f(x[n]) * (x[n] - x[n-1])
+                 / (f(x[n]) - f(x[n-1])).
+3. Repeat the iteration until the convergence condition is satisfied.
+
+Convergence Condition
+The iteration is stopped when:
+|x[n+1] - x[n]| < ε..
+where ε is the allowable error / tolerance.
+
+If the process is repeated in a specific interval for a specific step size, all the roots can be determined for the corresponding polynomial.
+
+#### Secant Code
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+double poly(const vector<double>&c,double x){
+    double r=0;
+    int n=c.size();
+    for(int i=0;i<n;i++) r+=c[i]*pow(x,n-1-i);
+    return r;
+}
+
+void printPoly(const vector<double>&c,ostream &out){
+    int n=c.size();
+    for(int i=0;i<n;i++){
+        if(c[i]==0) continue;
+        if(i>0&&c[i]>0) out<<" + ";
+        if(c[i]<0) out<<" - ";
+        if(abs(c[i])!=1||i==n-1) out<<abs(c[i]);
+        if(i<n-1){
+            out<<"x";
+            if(n-1-i>1) out<<"^"<<n-1-i;
+        }
+    }
+    out<<endl;
+}
+
+int main(){
+    ifstream fin("input.txt");
+    ofstream fout("output.txt");
+    if(!fin) return 0;
+
+    int degree;
+    fin>>degree;
+    vector<double>coef(degree+1);
+    for(int i=0;i<=degree;i++) fin>>coef[i];
+
+    double minX,maxX,step,tol;
+    fin>>minX>>maxX>>step>>tol;
+
+    fout<<"Degree of Polynomial: "<<degree<<endl;
+    fout<<"Polynomial: ";
+    printPoly(coef,fout);
+
+    vector<double>roots;
+    double x=minX;
+
+    while(x<maxX){
+        double x0=x,x1=x+step;
+        if(x1>maxX) x1=maxX;
+
+        double f0=poly(coef,x0),f1=poly(coef,x1);
+
+        if(f0*f1<=0){
+            double curr=x0,prev=x1;
+            double fcurr=poly(coef,curr),fprev=poly(coef,prev);
+            double next;
+
+            do{
+                if(fcurr==fprev) break;
+                next=curr-fcurr*(curr-prev)/(fcurr-fprev);
+                prev=curr;
+                fprev=fcurr;
+                curr=next;
+                fcurr=poly(coef,curr);
+            }while(fabs(fcurr)>tol);
+
+            bool exists=false;
+            for(double r:roots) if(fabs(r-curr)<tol) exists=true;
+            if(!exists) roots.push_back(curr);
+        }
+
+        x+=step;
+    }
+
+    if(roots.empty()) fout<<"No roots found in given range"<<endl;
+    else{
+        fout<<"Roots found:"<<endl;
+        for(int i=0;i<roots.size();i++) fout<<"Root "<<i+1<<": "<<roots[i]<<endl;
+    }
+
+    fin.close();
+    fout.close();
+    return 0;
+}
+```
+
+#### Secant Input
+```
+4
+1 0 -5 0 4
+-3.5 3.5
+0.5
+0.0001
+```
+
+#### Secant Output
+```
+Degree of Polynomial: 4
+Polynomial: x^4 - 5x^2 + 4
+Roots found:
+Root 1: -2
+Root 2: -1
+Root 3: 1
+Root 4: 2
+```
 
