@@ -48,6 +48,12 @@
     - [Code](#simpson-method-code)
     - [Input](#simpson-method-input)
     - [Output](#simpson-method-output)
+- [Ordinary Differential Equation](#ordinary-differential-equation)
+  - [RK Method](#rk-method)
+    - [Theory](#rk-method-theory)
+    - [Code](#rk-method-code)
+    - [Input](#rk-method-input)
+    - [Output](#rk-method-output)
 ## Solution of Linear Equations
 ### Matrix Inversion
 #### Matrix Inversion Theory
@@ -1403,4 +1409,99 @@ Integral Estimate: 8.9358309110
 Simpson's 3/8 Rule (N is multiple of 3):
 Integral Estimate: 8.6610423801
 ```
+
+## Ordinary Differential Equation
+### RK Method
+#### RK Method Theory
+The Runge–Kutta (RK4) Method is a powerful numerical technique used to solve first-order ordinary differential equations. It improves accuracy by using four slope evaluations at each step.
+It provides high accuracy without requiring higher derivatives.
+
+Given:
+dy/dx = f(x, y) with initial condition:
+y(x₀) = y₀.
+
+RK4 Formula: 
+Let step size be h.
+k1 = h * f(x[n], y[n]), 
+k2 = h * f(x[n] + h/2, y[n] + k1/2), 
+k3 = h * f(x[n] + h/2, y[n] + k2/2), 
+k4 = h * f(x[n] + h,   y[n] + k3). 
+
+Updating y: 
+y[n+1] = y[n] + (1/6) * (k1 + 2*k2 + 2*k3 + k4).
+Updating x: 
+x[n+1] = x[n] + h.
+
+#### RK Method Code
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+float dydx(float x,float y)
+{
+    return (x-y)/2;
+}
+
+int main()
+{
+    ifstream fin("input.txt");
+    ofstream fout("output.txt");
+    if(!fin)
+    {
+        cout<<"input.txt not found"<<endl;
+        return 0;
+    }
+
+    float x0,y0,x,h;
+    fin>>x0>>y0>>x>>h;
+    float X0=x0;
+
+    cout<<"Input Read From File:"<<endl;
+    cout<<"x0 = "<<x0<<endl;
+    cout<<"y0 = "<<y0<<endl;
+    cout<<"x  = "<<x<<endl;
+    cout<<"h  = "<<h<<endl;
+
+    int n=(int)((x-x0)/h);
+    float y=y0;
+    for(int i=1;i<=n;i++)
+    {
+        float k1=h*dydx(x0,y);
+        float k2=h*dydx(x0+0.5*h,y+0.5*k1);
+        float k3=h*dydx(x0+0.5*h,y+0.5*k2);
+        float k4=h*dydx(x0+h,y+k3);
+        y=y+(k1+2*k2+2*k3+k4)/6.0;
+        x0+=h;
+    }
+
+    cout<<"The value of y at x is: "<<y<<endl;
+    fout<<"Initial x0: "<<X0<<endl;
+    fout<<"Initial y0: "<<y0<<endl;
+    fout<<"Final x: "<<x<<endl;
+    fout<<"Step h: "<<h<<endl;
+    fout<<"The value of y at x is: "<<y<<endl;
+
+    fin.close();
+    fout.close();
+    return 0;
+}
+```
+
+#### RK Method Input
+```
+0
+1
+2
+0.1
+```
+
+#### RK Method Output
+```
+Initial x0: 0
+Initial y0: 1
+Final x: 2
+Step h: 0.1
+The value of y at x is: 1.10364
+```
+
 
