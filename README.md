@@ -48,11 +48,11 @@
     - [Code](#newtons-interpolation-code)
     - [Input](#newtons-interpolation-input)
     - [Output](#newtons-interpolation-output)
-  - [Newton's Backward Interpolation]
-    - [Theory]
-    - [Code]
-    - [Input]
-    - [Output] 
+  - [Newton's Backward Interpolation](#newtons-backward-interpolation)
+    - [Theory](#newtons-backward-interpolation-theory)
+    - [Code](#newtons-backward-interpolation-code)
+    - [Input](#newtons-backward-interpolation-input)
+    - [Output](#newtons-backward-interpolation-output)
   - [Newton's Divided difference method]
     - [Theory]
     - [Code]
@@ -1336,6 +1336,116 @@ int main()
 ```
 value of y at 4 is : 165
 value of y at 52 is : 0.788003
+```
+### Newton's Backward Interpolation
+#### Newton's Backward Interpolation Theory
+Newton's Backward Interpolation method is used when the given data points of the independent variable x are of equidistance and the value to be interpolated is near at the end of the table. 
+
+Let the given known data points of the independent variable x are x<sub>0</sub>, x<sub>1</sub>, x<sub>2</sub>, ......, x<sub>n</sub>
+
+Now, x<sub>1</sub> - x<sub>0</sub> = x<sub>2</sub> - x<sub>1</sub> = x<sub>n</sub> - x<sub>n-1</sub> = h
+
+Let, v = $\frac{x-xn}{h}$
+
+We also need to create a backward difference table. The backward difference is calculated as follows,
+
+y<sub>n</sub> - y<sub>n-1</sub> = Δy<sub>n</sub>
+
+Δy<sub>n</sub> - Δy<sub>n-1</sub> = Δ<sup>2</sup>y<sub>n</sub>
+
+Δ<sup>2</sup>y<sub>n</sub> - Δ<sup>2</sup>y<sub>n-1</sub> = Δ<sup>3</sup>y<sub>n</sub>
+
+.....
+
+Newton's backward interpolation formula is given as,
+
+y = y<sub>n</sub> + vΔy<sub>n</sub> + $\frac{v(v+1)}{2!}$ Δ<sup>2</sup>y<sub>n</sub> + $\frac{v(v+1)(v+2)}{3!}$ Δ<sup>3</sup>y<sub>n</sub> + ..... + $\frac{v(v+1)(v+2)...(v+n-1)}{n!}$ Δ<sup>n</sup>y<sub>n</sub> 
+
+#### Newton's Backward Interpolation Code
+```cpp
+#include <iostream>
+#include <bits/stdc++.h>
+#include <fstream>
+
+using namespace std;
+
+int main()
+{
+    ifstream infile("input.txt");
+    ofstream outfile("output.txt");
+
+
+    int n;
+    //cin >> n;
+    while(infile >> n)
+    {
+        vector<vector<double>> y(n, vector<double>(n, 0));
+        vector<double> x(n, 0);
+
+        for(int i = 0; i < n; i++)
+        {
+            infile >> x[i] >> y[i][0];
+        }
+
+        for(int j = 1; j < n; j++)
+        {
+            for(int i = 0; i < n-j; i++)
+            {
+                y[i][j] = y[i+1][j-1] - y[i][j-1];
+            }
+        }
+
+        double interpolate_val;
+        infile >> interpolate_val;
+
+        double u = (interpolate_val - x[n-1]) / (x[1] - x[0]);
+        double sum = y[n-1][0];
+        double u_sum = 1;
+        for(int i = 0; i < n-1; i++)
+        {
+            u_sum *= (u + i) / (i+1);
+            sum += u_sum * y[n-i-2][i+1];
+        }
+
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0; j < n; j++)
+            {
+                cout << y[i][j] << " ";
+            }
+            cout << endl;
+        }
+
+        stringstream os;
+        os << "value of y at " << interpolate_val << " is : " << sum << endl;
+        cout << os.str();
+        outfile << os.str();
+    }
+}
+```
+#### Newton's Backward Interpolation Input
+```
+5
+1891 46
+1901 66
+1911 81
+1921 93
+1931 101
+1925
+
+5
+24 28.06
+28 30.19
+32 32.75
+36 34.94
+40 40
+33
+```
+
+#### Newton's Backward Interpolation Output
+```
+value of y at 1925 is : 96.8368
+value of y at 33 is : 33.2747
 ```
 
 ## Numerical Integration
