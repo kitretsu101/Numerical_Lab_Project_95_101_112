@@ -43,11 +43,11 @@
     - [Input](#secant-input)
     - [Output](#secant-output)
 - [Numerical Integration](#numerical-integration)
-  - [Simpson's Method](#simpson's-method)
-    - [Theory](#simpson's-method-theory)
-    - [Code](#simpson's-method-code)
-    - [Input](#simpson's-method-input)
-    - [Output](#simpson's-method-output)
+  - [Simpson Method](#simpson-method)
+    - [Theory](#simpson-method-theory)
+    - [Code](#simpson-method-code)
+    - [Input](#simpson-method-input)
+    - [Output](#simpson-method-output)
 ## Solution of Linear Equations
 ### Matrix Inversion
 #### Matrix Inversion Theory
@@ -1210,8 +1210,8 @@ Root 4: 2
 ```
 
 ## Numerical Integration
-### Simpson's Method
-#### Simpson's Method Theory
+### Simpson Method
+#### Simpson Method Theory
 Simpson’s Methods are numerical integration techniques used to approximate the value of a definite integral. They work by replacing the function with polynomial curves over small subintervals, which gives higher accuracy than the trapezoidal rule for smooth functions.
 
 Simpson’s 1/3 Rule:
@@ -1238,7 +1238,7 @@ Formula:
   + f(xn)
 ]
 
-#### Simpson's Method Code
+#### Simpson Method Code
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
@@ -1384,12 +1384,12 @@ int main()
 }
 ```
 
-#### Simpson's Method Input
+#### Simpson Method Input
 ```
 0.0 3.14159 6
 ```
 
-#### Simpson's Method Output
+#### Simpson Method Output
 ```
 --- Numerical Integration Results (Simpson's Rules) ---
 Function: f(x) = sin^5(x) + 4*sin^4(x) + 1
