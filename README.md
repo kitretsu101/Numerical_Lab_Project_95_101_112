@@ -53,11 +53,11 @@
     - [Code](#newtons-backward-interpolation-code)
     - [Input](#newtons-backward-interpolation-input)
     - [Output](#newtons-backward-interpolation-output)
-  - [Newton's Divided difference method]
-    - [Theory]
-    - [Code]
-    - [Input]
-    - [Output]
+  - [Newton's Divided Difference](#newtons-divided-difference)
+    - [Theory](#newtons-divided-difference-theory)
+    - [Code](#newtons-divided-difference-code)
+    - [Input](#newtons-divided-difference-input)
+    - [Output](#newtons-divided-difference-output)
 - [Numerical Integration](#numerical-integration)
   - [Simpson Method](#simpson-method)
     - [Theory](#simpson-method-theory)
@@ -1446,6 +1446,102 @@ int main()
 ```
 value of y at 1925 is : 96.8368
 value of y at 33 is : 33.2747
+```
+
+
+### Newton's Divided Difference
+#### Newton's Divided Difference Theory
+Newton's divided difference method is used when the given data points of the independent variable x are not of equidistance.
+
+Let the given known data points of the independent variable x are x<sub>0</sub>, x<sub>1</sub>, x<sub>2</sub>, ......, x<sub>n</sub>
+
+Now, We also need to create a forward difference table for unequal intervals. The forward difference table is calculated as follows,
+
+f[x<sub>i</sub>, x<sub>j</sub>] = $\frac{f(xi)-f(xj)}{xi-xj}$ 
+
+f[x<sub>i</sub>, x<sub>j</sub>, x<sub>k</sub>] = $\frac{f[xi, xj]-f[xj, xk]}{xi-xk}$
+
+....
+
+Newton's divided difference formula is given as,
+
+f(x<sub>n</sub>) = f(x<sub>0</sub>) + (x-x<sub>0</sub>)f[x<sub>1</sub>, x<sub>0</sub>] + (x-x<sub>0</sub>)(x-x<sub>1</sub>)f[x<sub>2</sub>, x<sub>1</sub>, x<sub>0</sub>] + .... + (x-x<sub>0</sub>)(x-x<sub>1</sub>)...(x-x<sub>n-1</sub>)f[x<sub>n</sub>, x<sub>n-1</sub>, x<sub>n-2</sub>, ......, x<sub>1</sub>, x<sub>0</sub>]
+
+#### Newton's Divided Difference Code
+```cpp
+#include <iostream>
+#include <bits/stdc++.h>
+#include <fstream>
+
+using namespace std;
+
+int main()
+{
+    ifstream infile("input.txt");
+    ofstream outfile("output.txt");
+
+
+    int n;
+    //cin >> n;
+    while(infile >> n)
+    {
+        vector<vector<double>> y(n, vector<double>(n, 0));
+        vector<double> x(n, 0);
+
+        for(int i = 0; i < n; i++)
+        {
+            infile >> x[i] >> y[i][0];
+        }
+
+        for(int j = 1; j < n; j++)
+        {
+            for(int i = 0; i < n-j; i++)
+            {
+                y[i][j] = (y[i+1][j-1] - y[i][j-1]) / (double)(x[j+i] - x[i]);
+            }
+        }
+
+        double interpolate_val;
+        infile >> interpolate_val;
+
+        //double u = (interpolate_val - x[n-1]) / (x[1] - x[0]);
+        double sum = y[0][0];
+        double u_sum = 1;
+        for(int i = 0; i < n-1; i++)
+        {
+            u_sum *= (interpolate_val - x[i]);
+            sum += u_sum * y[0][i+1];
+        }
+
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0; j < n; j++)
+            {
+                cout << y[i][j] << " ";
+            }
+            cout << endl;
+        }
+
+        stringstream os;
+        os << "value of y at " << interpolate_val << " is : " << sum << endl;
+        cout << os.str();
+        outfile << os.str();
+    }
+}
+```
+#### Newton's Divided Difference Input
+```
+4
+1 0
+4 1.386294
+6 1.79175
+5 1.609438
+2
+```
+
+#### Newton's Divided Difference Output
+```
+value of y at 2 is : 0.628762
 ```
 
 ## Numerical Integration
