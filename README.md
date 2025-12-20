@@ -42,6 +42,22 @@
     - [Code](#secant-code)
     - [Input](#secant-input)
     - [Output](#secant-output)
+- [Newton's Interpolation](#newtons-interpolation)
+  - [Newton's Forward Interpolation](#newtons-forward-interpolation)
+    - [Theory](#newtons-interpolation-theory)
+    - [Code](#newtons-interpolation-code)
+    - [Input](#newtons-interpolation-input)
+    - [Output](#newtons-interpolation-output)
+  - [Newton's Backward Interpolation]
+    - [Theory]
+    - [Code]
+    - [Input]
+    - [Output] 
+  - [Newton's Divided difference method]
+    - [Theory]
+    - [Code]
+    - [Input]
+    - [Output]
 - [Numerical Integration](#numerical-integration)
   - [Simpson Method](#simpson-method)
     - [Theory](#simpson-method-theory)
@@ -1213,6 +1229,113 @@ Root 1: -2
 Root 2: -1
 Root 3: 1
 Root 4: 2
+```
+
+## Newton's Interpolation
+Interpolation is referred to as the technique to find the value of a function at a point that lies between two unknown points. It allows us a to construct a function from the given known data points and find out the values of the function at the intermediate data points. There are several methods of interpolation :
+- Newton's Forward Interpolation
+- Newton's Backward Interpolation
+- Newton's Divided difference method
+### Newton's Forward Interpolation
+#### Newton's Forward Interpolation Theory
+Newton's Forward Interpolation method is used when the given data points of the independent variable x are of equidistance and the value to be interpolated is near at the beginning of the table. 
+
+Let the given known data points of the independent variable x are x<sub>0</sub>, x<sub>1</sub>, x<sub>2</sub>, ......, x<sub>n</sub>
+
+Now, x<sub>1</sub> - x<sub>0</sub> = x<sub>2</sub> - x<sub>1</sub> = x<sub>n</sub> - x<sub>n-1</sub> = h
+
+Let, u = $\frac{x-x0}{h}$
+
+We also need to create a forward difference table. The forward difference is calculated as follows,
+
+y<sub>1</sub> - y<sub>0</sub> = Δy<sub>0</sub>
+
+Δy<sub>1</sub> - Δy<sub>0</sub> = Δ<sup>2</sup>y<sub>0</sub>
+
+Δ<sup>2</sup>y<sub>1</sub> - Δ<sup>2</sup>y<sub>0</sub> = Δ<sup>3</sup>y<sub>0</sub>
+
+.....
+
+Newton's forward interpolation formula is given as,
+
+y = y<sub>0</sub> + uΔy<sub>0</sub> + $\frac{u(u-1)}{2!}$ Δ<sup>2</sup>y<sub>0</sub> + $\frac{u(u-1)(u-2)}{3!}$ Δ<sup>3</sup>y<sub>0</sub> + ..... + $\frac{u(u-1)(u-2)...(u-n+1)}{n!}$ Δ<sup>n</sup>y<sub>0</sub> 
+
+#### Newton's Forward Interpolation Code
+```cpp
+#include <iostream>
+#include <bits/stdc++.h>
+#include <fstream>
+
+using namespace std;
+
+int main()
+{
+    ifstream infile("input.txt");
+    ofstream outfile("output.txt");
+
+
+    int n;
+    //cin >> n;
+    while(infile >> n) {
+    vector<vector<double>> y(n, vector<double>(n, 0));
+    vector<double> x(n, 0);
+
+    for(int i = 0; i < n; i++) {
+        infile >> x[i] >> y[i][0];
+    }
+
+    for(int j = 1; j < n; j++) {
+        for(int i = 0; i < n-j; i++) {
+            y[i][j] = y[i+1][j-1] - y[i][j-1];
+        }
+    }
+
+    double interpolate_val;
+    infile >> interpolate_val;
+
+    double u = (interpolate_val - x[0]) / (x[1] - x[0]);
+    double sum = y[0][0];
+    double u_sum = 1;
+    for(int i = 0; i < n-1; i++) {
+        u_sum *= (u - i) / (i+1);
+        sum += u_sum * y[0][i+1];
+    }
+
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < n; j++) {
+            cout << y[i][j] << " ";
+        }
+        cout << endl;
+    }
+
+    stringstream os;
+    os << "value of y at " << interpolate_val << " is : " << sum << endl;
+    cout << os.str();
+    outfile << os.str();
+    }
+}
+```
+#### Newton's Forward Interpolation Input
+```
+4
+3 180
+5 150
+7 120
+9 90
+4
+
+4
+45 0.7071
+50 0.766
+55 0.8192
+60 0.866
+52
+```
+
+#### Newton's Forward Interpolation Output
+```
+value of y at 4 is : 165
+value of y at 52 is : 0.788003
 ```
 
 ## Numerical Integration
