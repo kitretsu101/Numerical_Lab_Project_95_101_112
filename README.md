@@ -16,6 +16,11 @@
     - [Code](#gauss-jordan-code)
     - [Input](#gauss-jordan-input)
     - [Output](#gauss-jordan-output)
+  - [LU Decomposition Method](#lu-decomposition-method)
+    - [Theory](#lu-decomposition-theory)
+    - [Code](#lu-decomposition-code)
+    - [Input](#lu-decomposition-input)
+    - [Output](#lu-decomposition-output)
 - [Solution of Non-Linear Equations](#solution-of-non-linear-equations)
   - [Bisection Method](#bisection-method)
     - [Theory](#bisection-theory)
@@ -510,6 +515,155 @@ Solution type: No solution
 
 System size: 2
 Solution type: Infinite solutions
+```
+
+### LU Decomposition Method
+#### LU Decomposition Theory
+The LU Factorization Method is used to solve systems of linear equations by decomposing the coefficient matrix into a lower triangular matrix (L) and an upper triangular matrix (U).
+It is especially efficient when solving the same system with multiple right-hand sides.
+
+Given: A augmented matrix A x = b where,
+A is an n × n matrix,
+x is the unknown vector,
+b is the constant vector.
+
+Now, we have to factorize it such as: 
+A = LU
+where,
+L is a lower triangular matrix, 
+U is an upper triangular matrix.
+
+Steps:
+Step 1: Forward Substitution:
+To do this we have to solve,
+L y = b using, 
+y[i] = b[i] - Σ(L[i][j] * y[j]).
+where, j = 1 to i-1.
+
+Step 2: Backward Substitution
+To do this we have to solve,
+U x = y using, 
+x[n] = y[n] / U[n][n], 
+x[i] = ( y[i] - Σ(U[i][j] * x[j]) ) / U[i][i].
+where, j = i+1 to n
+
+#### LU Decomposition Code
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ifstream fin("input.txt");
+    ofstream fout("output.txt");
+
+    int n;
+    fin >> n;
+
+    vector<vector<double>> A(n, vector<double>(n));
+    vector<double> B(n);
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++)
+            fin >> A[i][j];
+        fin >> B[i];
+    }
+
+    vector<vector<double>> L(n, vector<double>(n, 0));
+    vector<vector<double>> U(n, vector<double>(n, 0));
+
+    for (int i = 0; i < n; i++) {
+        for (int k = i; k < n; k++) {
+            double sum = 0;
+            for (int j = 0; j < i; j++)
+                sum += L[i][j] * U[j][k];
+            U[i][k] = A[i][k] - sum;
+        }
+
+        L[i][i] = 1;
+
+        if (fabs(U[i][i]) < 1e-9) {
+            fout << "The system has no unique solution.\n";
+            return 0;
+        }
+
+        for (int k = i + 1; k < n; k++) {
+            double sum = 0;
+            for (int j = 0; j < i; j++)
+                sum += L[k][j] * U[j][i];
+            L[k][i] = (A[k][i] - sum) / U[i][i];
+        }
+    }
+
+    vector<double> Y(n);
+    for (int i = 0; i < n; i++) {
+        double sum = 0;
+        for (int j = 0; j < i; j++)
+            sum += L[i][j] * Y[j];
+        Y[i] = B[i] - sum;
+    }
+
+    vector<double> X(n);
+    for (int i = n - 1; i >= 0; i--) {
+        double sum = 0;
+        for (int j = i + 1; j < n; j++)
+            sum += U[i][j] * X[j];
+        X[i] = (Y[i] - sum) / U[i][i];
+    }
+
+    fout << fixed << setprecision(3);
+
+    fout << "Lower Triangular Matrix (L):\n";
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++)
+            fout << setw(8) << L[i][j];
+        fout << endl;
+    }
+
+    fout << "\nUpper Triangular Matrix (U):\n";
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++)
+            fout << setw(8) << U[i][j];
+        fout << endl;
+    }
+
+    fout << "\nSolution:\n";
+    for (int i = 0; i < n; i++)
+        fout << "x" << i + 1 << " = " << X[i] << endl;
+
+    fout << "\nThe system has unique solution.\n";
+
+    fin.close();
+    fout.close();
+    return 0;
+}
+```
+
+#### LU Decomposition Input
+```
+3
+2 1 -1 8
+-3 -1 2 -11
+-2 1 2 -3
+```
+
+#### LU Decomposition Output
+```
+Lower Triangular Matrix (L):
+   1.000   0.000   0.000
+  -1.500   1.000   0.000
+  -1.000   4.000   1.000
+
+Upper Triangular Matrix (U):
+   2.000   1.000  -1.000
+   0.000   0.500   0.500
+   0.000   0.000  -1.000
+
+Solution:
+x1 = 2.000
+x2 = 3.000
+x3 = -1.000
+
+The system has unique solution.
 ```
 
 ## Solution of Non-Linear Equations
