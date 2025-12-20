@@ -17,6 +17,16 @@
     - [Input](#gauss-jordan-input)
     - [Output](#gauss-jordan-output)
 - [Solution of Non-Linear Equations](#solution-of-non-linear-equations)
+  - [Bisection Method](#bisection-method)
+    - [Theory](#bisection-theory)
+    - [Code](#bisection-code)
+    - [Input](#bisection-input)
+    - [Output](#bisection-output)
+  - [False Position Method](#false-position-method)
+    - [Theory](#false-position-theory)
+    - [Code](#false-position-code)
+    - [Input](#false-position-input)
+    - [Output](#false-position-output)
   - [Newton Raphson Method](#newton-raphson-method)
     - [Theory](#newton-raphson-theory)
     - [Code](#newton-raphson-code)
@@ -366,10 +376,10 @@ The augmented matrix [A | b] is transformed into:
 where I is the identity matrix.
 
 For each pivot element a[k][k]:
-1. Normalize the pivot row
-Row[k] = Row[k] / a[k][k].
+1. Normalizing the pivot row
+   Row[k] = Row[k] / a[k][k].
 
-2. Eliminate all other elements in the pivot column
+2. Eliminating all other elements in the pivot column
 a[i][j] = a[i][j] - a[i][k] * a[k][j]
 for:
 i ≠ k
@@ -503,6 +513,244 @@ Solution type: Infinite solutions
 ```
 
 ## Solution of Non-Linear Equations
+### Bisection Method
+#### Bisection Theory
+The Bisection Method is a simple and reliable numerical technique used to find a root of a nonlinear equation. The method works by repeatedly dividing an interval into two halves and selecting the subinterval that contains the root.It is based on the Intermediate Value Theorem.
+
+Given a nonlinear equation: f(x) = 0.
+
+Choose two initial values a and b such that:
+f(a) * f(b) < 0.
+This ensures that a root lies between a and b.
+Steps:
+
+1. Computing the midpoint:c = (a + b) / 2
+
+2. Evaluating f(c),
+   If f(a) * f(c) < 0, set b = c
+   If f(c) * f(b) < 0, set a = c
+
+This process is repeated until convergence where convergence condition is,
+|b - a| < ε or |f(c)| < ε, 
+where ε is the tolerance.
+
+We can get all the roots of the plynomial by doing this process repeteadly in an interval.
+
+#### Bisection Code
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<double> a;
+int n;
+
+double f(double x) {
+    double sum = 0;
+    for (int i = 0; i <= n; i++) {
+        sum += a[i] * pow(x, n - i);
+    }
+    return sum;
+}
+
+int main() {
+    ifstream fin("input.txt");
+    ofstream fout("output.txt");
+
+    fin >> n;
+    a.resize(n + 1);
+
+    for (int i = 0; i <= n; i++)
+        fin >> a[i];
+
+    double step, eps;
+    fin >> step >> eps;
+
+    double an = a[0];
+    double an1 = (n >= 1) ? a[1] : 0;
+    double an2 = (n >= 2) ? a[2] : 0;
+
+    double xmax = sqrt((an1 * an1 - 2 * an * an2) / an);
+
+    fout << fixed << setprecision(4);
+    fout << "Search Interval: [" << -xmax << ", " << xmax << "]\n\n";
+
+    vector<pair<double, double>> brackets;
+
+    for (double x = -xmax; x < xmax; x += step) {
+        if (f(x) * f(x + step) <= 0) {
+            brackets.push_back({x, x + step});
+        }
+    }
+
+    int rootCount = 1;
+
+    for (auto br : brackets) {
+        double left = br.first;
+        double right = br.second;
+        double mid;
+        int iter = 0;
+
+        while (true) {
+            mid = (left + right) / 2.0;
+            iter++;
+
+            if (fabs(f(mid)) < eps)
+                break;
+
+            if (f(left) * f(mid) < 0)
+                right = mid;
+            else
+                left = mid;
+        }
+
+        fout << "Root " << rootCount++
+             << " = " << mid
+             << "   Iterations = " << iter << endl;
+
+        if (rootCount > n)
+            break;
+    }
+
+    fin.close();
+    fout.close();
+    return 0;
+}
+```
+
+#### Bisection Input
+```
+3
+1 -6 11 -6
+0.5
+0.0001
+```
+
+#### Bisection Output
+```
+Search Interval: [-3.7417, 3.7417]
+
+Root 1 = 1.0000   Iterations = 10
+Root 2 = 2.0000   Iterations = 10
+Root 3 = 3.0000   Iterations = 10
+```
+
+### False Position Method
+#### False Position Theory
+The False Position Method is an improvement over the bisection method. Instead of choosing the midpoint like Bisection method, it uses a linear interpolation between the two endpoints to approximate the root.
+Given:
+f(x) = 0 where f(x) is a polynomial of any degree.
+
+Let, the initial values are a and b such that:
+f(a) * f(b) < 0.
+
+Formula:
+Formula used for this method is:
+c = (a * f(b) - b * f(a)) / (f(b) - f(a)).
+
+Steps:
+
+1. Computing c using the above formula.
+
+2. Evaluating f(c),
+   If f(a) * f(c) < 0, setting b = c,
+   If f(c) * f(b) < 0, setting a = c.
+This process if repeated until convergence.
+
+Convergence Condition:
+|f(c)| < ε or |b - a| < ε where ε is tolerance.
+
+Like Bisection method, we can get all the roots of the polynomial by repeating the process inside a specific interval.
+
+#### False Position Code
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+double f(double x, vector<double>& coef) {
+    double res = 0;
+    int n = coef.size();
+    for (int i = 0; i < n; i++)
+        res = res * x + coef[i];
+    return res;
+}
+
+int main() {
+    ifstream fin("input.txt");
+    ofstream fout("output.txt");
+
+    int n;
+    fin >> n;
+
+    vector<double> coef(n + 1);
+    for (int i = 0; i <= n; i++)
+        fin >> coef[i];
+
+    double step, eps;
+    fin >> step >> eps;
+
+    double bound = sqrt((coef[1] * coef[1] - 2 * coef[0] * coef[2]) / coef[0]);
+    fout << fixed << setprecision(4);
+    fout << "Search Interval: [-" << bound << ", " << bound << "]\n\n";
+
+    vector<pair<double, double>> intervals;
+
+    for (double x = -bound; x < bound; x += step) {
+        if (f(x, coef) * f(x + step, coef) < 0)
+            intervals.push_back({x, x + step});
+    }
+
+    int rootCount = 1;
+    for (auto it : intervals) {
+        double a = it.first, b = it.second;
+        double fa = f(a, coef), fb = f(b, coef);
+        double c, fc;
+        int iter = 0;
+
+        do {
+            c = (a * fb - b * fa) / (fb - fa);
+            fc = f(c, coef);
+
+            if (fa * fc < 0) {
+                b = c;
+                fb = fc;
+            } else {
+                a = c;
+                fa = fc;
+            }
+
+            iter++;
+        } while (fabs(fc) > eps);
+
+        fout << "Root " << rootCount++ << " = " << c
+             << "   Iterations = " << iter << endl;
+    }
+
+    if (intervals.empty())
+        fout << "No real root found.\n";
+
+    fin.close();
+    fout.close();
+    return 0;
+}
+```
+
+#### False Position Input
+```
+3
+1 -6 11 -6
+0.5
+0.0001
+```
+
+#### False Position Output
+```
+Search Interval: [-3.7417, 3.7417]
+
+Root 1 = 1.0000   Iterations = 8
+Root 2 = 1.9999   Iterations = 2
+Root 3 = 3.0000   Iterations = 8
+```
+
 ### Newton Raphson Method
 #### Newton Raphson Theory
 The Newton–Raphson Method is an iterative numerical technique used to find roots of nonlinear equations. It starts from an initial guess and improves the approximation using the derivative of the function.
@@ -680,12 +928,12 @@ The goal is to determine a root x* such that:
 f(x*) = 0.
 
 Steps:
-1. Choose two initial approximations x₀ and x₁ such that:
+1. Choosing two initial approximations x₀ and x₁ such that:
 f(x₀) ≠ f(x₁).
-2. Compute the next approximation using the secant formula:
-x[n+1] = x[n] - f(x[n]) * (x[n] - x[n-1])
+2. Computing the next approximation using the secant formula:
+   x[n+1] = x[n] - f(x[n]) * (x[n] - x[n-1])
                  / (f(x[n]) - f(x[n-1])).
-3. Repeat the iteration until the convergence condition is satisfied.
+3. Repeating the iteration until the convergence condition is satisfied.
 
 Convergence Condition:
 The iteration is stopped when:
