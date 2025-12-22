@@ -53,6 +53,11 @@
     - [Code](#transcendental-equation-code)
     - [Input](#transcendental-equation-input)
     - [Output](#transcendental-equation-output)
+  - [Polynomial Equation](#polynomial-equation)
+    - [Theory](#polynomial-equation-theory)
+    - [Code](#polynomial-equation-code)
+    - [Input](#polynomial-equation-input)
+    - [Output](#polynomial-equation-output)
 - [Newton's Interpolation](#newtons-interpolation)
   - [Newton's Forward Interpolation](#newtons-forward-interpolation)
     - [Theory](#newtons-forward-interpolation-theory)
@@ -1377,6 +1382,7 @@ y = ax<sup>b</sup>
 By taking ln on both sides, we get
 
 lny = lna + blnx
+
 Let lny = y, lna = a, x = lnx
 
 Comparing it with the linear equation y = a + bx and applying linear regression we get, 
@@ -1447,6 +1453,173 @@ int main()
 #### Transcendental Equation Output
 ```
 y = 8.11299x^0.898913
+```
+
+### Polynomial Equation
+#### Polynomial Equation Theory
+We consider a polynomical equation f(x) of order m-1
+
+y = f(x) = a<sub>0</sub> + a<sub>1</sub>x + a<sub>2</sub>x<sup>2</sup> + .... + a<sub></sub>m-1<sup>m-1</sup>
+
+Given n data points, the sum of the squared difference of the errors Q is,
+
+Q = $\sum_{i=1}^{n} (y_i - f(x_i))^2$
+
+Now we need to find all coefficients (a<sub>0</sub>, a<sub>1</sub>, a<sub>2</sub>, ... a<sub>m-1</sub>) such that the partical derivatives of the error function is 0 (i.e. the error function is minimized)
+
+i.e. $\frac{∂Q}{∂a_0}$ = 0, $\frac{∂Q}{∂a_1}$ = 0, $\frac{∂Q}{∂a_2}$ = 0, ......, $\frac{∂Q}{∂a_m-1}$ = 0
+
+Writing out the general term,
+
+$\frac{∂Q}{∂a_j}$ = 0, where j = 0, 1, 2, ... , m-1
+
+=> $\frac{∂Q}{∂a_j}$ {$\sum_{i=1}^{n} (y_i - f(x_i))^2$} = 0
+
+=> 2 * $\sum_{i=1}^{n} (y_i - f(x_i))^2$ . (- $\frac{∂f(x_i)}{∂a_j}$) = 0 ...(1)
+
+And, 
+
+$\frac{∂f(x_i)}{∂a_j}$ = x<sub>i</sub><sup>j</sup>
+
+From (1),
+
+$\sum_{i=1}^{n} (x_i^jy_i - x_i^jf(x_i)$ = 0....(2)
+
+Substituting f(x<sub>i</sub>) into (2)
+
+=> $\sum_{i=1}^{n} x_i^jy_i(a_0 + a_1x_i + a_2x_i^2 + .... + a_{m-1}x_i^{m-1})$
+
+Now we get m equations for j = 0, 1, 2, 3, ..., m-1
+
+(n)a<sub>0</sub> + $\sum_{i=1}^{n} x_ia_1$ + $\sum_{i=1}^{n} x_i^2a_2$ + ... + $\sum_{i=1}^{n} x_i^{m-1}a_{m-1}$ = $\sum_{i=1}^{n} y_i$
+$\sum_{i=1}^{n} x_ia_0$ + $\sum_{i=1}^{n} x_i^2a_1$ + $\sum_{i=1}^{n} x_i^3a_2$ + ... + $\sum_{i=1}^{n} x_i^{m}a_{m-1}$ = $\sum_{i=1}^{n} x_iy_i$
+.
+.
+.
+$\sum_{i=1}^{n} x_{m-1}a_0$ + $\sum_{i=1}^{n} x_m^2a_1$ + $\sum_{i=1}^{n} x_{m+1}a_2$ + ... + $\sum_{i=1}^{n} x_i^{2m-2}a_{m-1}$ = $\sum_{i=1}^{n} x_{m-1}y_i$
+
+#### Polynomial Equation Code
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+void gauss_elimination(vector<vector<double>>& a, int n)
+{
+    for(int k=0; k<n; k++)
+    {
+        int mx=k;
+        for(int i=k+1; i<n; i++)
+            if(fabs(a[i][k])>fabs(a[mx][k])) mx=i;
+        swap(a[k],a[mx]);
+
+        if(fabs(a[k][k])<1e-9) continue;
+
+        for(int i=k+1; i<n; i++)
+        {
+            double f=a[i][k]/a[k][k];
+            for(int j=k; j<=n; j++)
+                a[i][j]-=f*a[k][j];
+        }
+    }
+}
+
+vector<double> backward_sub(vector<vector<double>>& a, int n)
+{
+    vector<double>x(n);
+    for(int i=n-1; i>=0; i--)
+    {
+        x[i]=a[i][n];
+        for(int j=i+1; j<n; j++)
+            x[i]-=a[i][j]*x[j];
+        x[i]/=a[i][i];
+    }
+    return x;
+}
+
+int main()
+{
+    ifstream infile("input.txt");
+    ofstream outfile("output.txt");
+    stringstream ss;
+    int n;
+    while(infile >> n) {
+        int order;
+        infile >> order;
+        int mat_size = order + 1;
+        vector<double> x(n);
+        vector<double> y(n);
+        vector<double> sol(n);
+        vector<vector<double>> mat(mat_size, vector<double>(mat_size + 1));
+
+        for(int i = 0; i < n; i++) {
+            infile >> x[i] >> y[i];
+        }
+
+        for(int i = 0; i < mat_size; i++) {
+            for(int j = 0; j < mat_size; j++) {
+                double sum = 0;
+                for(int k = 0; k < n; k++) {
+                    sum += pow(x[k], i+j);
+                }
+                mat[i][j] = sum;
+            }
+        }
+
+        for(int i = 0; i < mat_size; i++) {
+            double sum = 0;
+            for(int j = 0; j < n; j++) {
+                sum += pow(x[j], i) * y[j];
+            }
+            mat[i][mat_size] = sum;
+        }
+
+        gauss_elimination(mat, mat_size);
+        sol = backward_sub(mat, mat_size);
+
+
+        ss << "y = ";
+        cout << "y = ";
+        for(int i = 0; i < mat_size; i++) {
+            cout << sol[i] << "x^" << i;
+            ss << sol[i] << "x^" << i;
+            if(i != mat_size - 1) {
+                cout << " + ";
+                ss << " + ";
+            }
+            else {
+                cout << endl;
+                ss << endl;
+            }
+        }
+
+        outfile << ss.str();
+//        for(int i = 0; i < mat_size; i++) {
+//            for(int j = 0; j < mat_size + 1; j++) {
+//                cout << mat[i][j] << " ";
+//            }
+//            cout << endl;
+//        }
+
+
+    }
+    return 0;
+}
+```
+
+#### Polynomial Equation Input
+```
+5
+2
+1 6
+2 11
+3 18
+4 27
+5 38
+```
+
+#### Polynomial Equation Output
+```
+y = 3x^0 + 2x^1 + 1x^2
 ```
 
 
