@@ -42,12 +42,18 @@
     - [Code](#secant-code)
     - [Input](#secant-input)
     - [Output](#secant-output)
+- [Least Square Regression](#least-square-regression)
+  - [Linear Equation](#linear-equation)
+    - [Theory](#linear-equation-theory)
+    - [Code](#linear-equation-code)
+    - [Input](#linear-equation-input)
+    - [Output](#linear-equation-output)
 - [Newton's Interpolation](#newtons-interpolation)
   - [Newton's Forward Interpolation](#newtons-forward-interpolation)
-    - [Theory](#newtons-interpolation-theory)
-    - [Code](#newtons-interpolation-code)
-    - [Input](#newtons-interpolation-input)
-    - [Output](#newtons-interpolation-output)
+    - [Theory](#newtons-forward-interpolation-theory)
+    - [Code](#newtons-forward-interpolation-code)
+    - [Input](#newtons-forward-interpolation-input)
+    - [Output](#newtons-forward-interpolation-output)
   - [Newton's Backward Interpolation](#newtons-backward-interpolation)
     - [Theory](#newtons-backward-interpolation-theory)
     - [Code](#newtons-backward-interpolation-code)
@@ -1242,6 +1248,120 @@ Root 3: 1
 Root 4: 2
 ```
 
+## Least Square Regression
+The least squre method is a popular mathematical approach used in data fitting, regression analysis, and predictive modeling. It helps find the best-fit line or curve that minimizes the sum of squared differences between the observed data points and the predicted values.
+### Linear Equation
+#### Linear Equation Theory
+
+We assume a linear equation, y = f(x) = ax + b
+
+The distance from the point (x<sub>i</sub>, y<sub>i</sub>) to the line f(x) is the error,
+
+q<sub>i</sub> = y<sub>i</sub> - f(x<sub>i</sub>)
+
+=> q<sub>i</sub> = y<sub>i</sub> - a - bx<sub>i</sub>
+
+Our goal is to minimize the sum of errors of all data points.
+
+Instead of taking the absolute difference, we take the sum of squared difference of all data points and try to minimize the error.
+Let the sum of squared difference of all data points is Q.
+
+Q = $\sum_{i=1}^{n}$ q<sub>i</sub><sup>2</sup>
+
+= $\sum_{i=1}^{n}$ (y<sub>i</sub> - a - bx<sub>i</sub>)<sup>2</sup>
+
+We find a and b such their the partial derivative of the error function is 0 (i.e. the error is minimized)
+
+$\frac{∂Q}{∂a}$ = 0 and $\frac{∂Q}{∂b}$ = 0
+
+Now, $\frac{∂Q}{∂a}$ = $\sum_{i=1}^{n}$ 2*(y<sub>i</sub> - a - bx<sub>i</sub>)*(-1) = 0
+
+=> $\sum_{i=1}^{n}$ y<sub>i</sub> = na + b $\sum_{i=1}^{n}$ x<sub>i</sub> ....(1)
+
+Similarly,
+
+$\frac{∂Q}{∂b}$ = $\sum_{i=1}^{n}$ 2*(y<sub>i</sub> - a - bx<sub>i</sub>)*(-x<sub>i</sub>) = 0
+
+=> $\sum_{i=1}^{n}$ x<sub>i</sub>y<sub>i</sub> = a $\sum_{i=1}^{n}$ x<sub>i</sub> + b $\sum_{i=1}^{n}$ x<sub>i</sub><sup>2</sup>  ....(2)
+
+Combining equation (1) and (2) we get,
+
+b = $\frac{n∑xiyi - ∑xi∑yi}{n∑xi^2 - (∑xi)^2}$
+
+From (1) we get,
+
+a = $\frac{∑yi - b∑xi}{n}$
+
+#### Linear Equation Code
+```cpp
+#include <iostream>
+#include <bits/stdc++.h>
+#include <fstream>
+
+using namespace std;
+
+int main()
+{
+    int n;
+    //cin >> n;
+
+    ifstream infile("input.txt");
+    ofstream outfile("output.txt");
+    double sumx = 0;
+    double sumy = 0;
+    double sumxy = 0;
+    double sumx2 = 0;
+
+    while(infile >> n)
+    {
+        for(int i = 0; i < n; i++)
+        {
+            double x, y;
+            //cin >> x >> y;
+            infile >> x >> y;
+            sumx += x;
+            sumy += y;
+            sumxy += x * y;
+            sumx2 += x * x;
+        }
+
+        double b = (n*sumxy - sumx*sumy) / (n*sumx2 - sumx*sumx);
+        double a = (sumy - b*sumx) / n;
+
+        ostringstream os;
+        os << "y = " << a << " + " << b << "x" << endl;
+        cout << os.str();
+        outfile << os.str();
+    }
+
+    outfile.close();
+    infile.close();
+}
+```
+#### Linear Equation Input
+```
+6
+100 90
+95 95
+85 80
+80 70
+70 65
+60 60
+
+5
+95 90
+85 80
+80 70
+70 65
+60 60
+```
+
+#### Linear Equation Output
+```
+y = 4.00735 + 0.889706x
+
+y = -0.226447 + 0.938787x
+```
 ## Newton's Interpolation
 Interpolation is referred to as the technique to find the value of a function at a point that lies between two unknown points. It allows us a to construct a function from the given known data points and find out the values of the function at the intermediate data points. There are several methods of interpolation :
 - Newton's Forward Interpolation
