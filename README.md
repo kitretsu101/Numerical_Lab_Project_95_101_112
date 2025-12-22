@@ -64,6 +64,17 @@
     - [Code](#simpson-method-code)
     - [Input](#simpson-method-input)
     - [Output](#simpson-method-output)
+- [Numerical Differentiation](#numerical-differentiation)
+  - [Differentiation with Forward Interpolation](#differentiation-with-forward-interpolation)
+    - [Theory](#differentiation-with-forward-interpolation-theory)
+    - [Code](#differentiation-with-forward-interpolation-code)
+    - [Input](#differentiation-with-forward-interpolation-input)
+    - [Output](#differentiation-with-forward-interpolation-output)
+  - [Differentiation with Backward Interpolation](#differentiation-with-backward-interpolation)
+    - [Theory](#differentiation-with-backward-interpolation-theory)
+    - [Code](#differentiation-with-backward-interpolation-code)
+    - [Input](#differentiation-with-backward-interpolation-input)
+    - [Output](#differentiation-with-backward-interpolation-output)
 - [Ordinary Differential Equation](#ordinary-differential-equation)
   - [RK Method](#rk-method)
     - [Theory](#rk-method-theory)
@@ -1831,6 +1842,115 @@ Initial y0: 1
 Final x: 2
 Step h: 0.1
 The value of y at x is: 1.10364
+```
+
+## Numerical Differentiation
+
+Numerical Differentiation is the process of approximating derivatives of a function when the function is available only at a finite number of discrete points instead of as an explicit formula.
+In such cases, direct analytical differentiation is not possible, so an interpolating polynomial is constructed from the given data points and then differentiated.
+
+### Differentiation with Forward Interpolation
+#### Differentiation with Forward Interpolation Theory
+
+The Forward Interpolation Differentiation Method is used when the value of the derivative is required near the beginning of the data table. This method is based on Newton’s Forward Interpolation Formula, which expresses the function in terms of forward differences.
+
+After constructing the interpolation polynomial, it is differentiated to obtain approximate formulas for the first and second derivatives.
+
+Forward Interpolation Formula
+f(x) = y0
+     + u Δy0
+     + u(u−1)/2! Δ²y0
+     + u(u−1)(u−2)/3! Δ³y0
+     + ... 
+where:
+u = (x − x0) / h.
+
+First Derivative Formula after differentiating the forward interpolation polynomial and evaluating at x = x0 (u = 0):
+
+f'(x0) ≈ (1/h) [
+    Δy0
+  − (1/2) Δ²y0
+  + (1/3) Δ³y0
+  − (1/4) Δ⁴y0
+  + ...
+]
+
+Second Derivative Formula
+f''(x0) ≈ (1/h²) [
+    Δ²y0
+  − Δ³y0
+  + (11/12) Δ⁴y0
+  − ...
+]
+
+#### Differentiation with Forward Interpolation Code
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ifstream fin("input.txt");
+    ofstream fout("output.txt");
+
+    int n;
+    fin >> n;
+
+    vector<double> x(n), y(n);
+    for (int i = 0; i < n; i++) fin >> x[i];
+    for (int i = 0; i < n; i++) fin >> y[i];
+
+    double h = x[1] - x[0];
+
+    vector<vector<double>> diff(n, vector<double>(n));
+    for (int i = 0; i < n; i++)
+        diff[i][0] = y[i];
+
+    for (int j = 1; j < n; j++)
+        for (int i = 0; i < n - j; i++)
+            diff[i][j] = diff[i + 1][j - 1] - diff[i][j - 1];
+
+    fout << fixed << setprecision(6);
+    fout << "Forward Difference Table:\n";
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n - i; j++)
+            fout << diff[i][j] << " ";
+        fout << "\n";
+    }
+
+    double derivative = 0;
+    for (int i = 1; i < n; i++) {
+        double term = diff[0][i];
+        for (int j = 1; j < i; j++)
+            term *= (double)j / (j + 1);
+        derivative += (i % 2 ? term : -term);
+    }
+
+    derivative /= h;
+
+    fout << "\nFirst derivative at x = " << x[0]
+         << " is " << derivative << endl;
+
+    return 0;
+}
+```
+
+#### Differentiation with Forward Interpolation Input
+```
+5
+0 1 2 3 4
+1 2 4 8 16
+```
+
+#### Differentiation with Forward Interpolation Input
+```
+Forward Difference Table:
+1.000000 1.000000 1.000000 1.000000 1.000000 
+2.000000 2.000000 2.000000 2.000000 
+4.000000 4.000000 4.000000 
+8.000000 8.000000 
+16.000000 
+
+First derivative at x = 0.000000 is 0.583333
 ```
 
 
