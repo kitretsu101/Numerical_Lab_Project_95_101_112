@@ -1491,11 +1491,16 @@ Substituting f(x<sub>i</sub>) into (2)
 
 Now we get m equations for j = 0, 1, 2, 3, ..., m-1
 
-(n)a<sub>0</sub> + $\sum_{i=1}^{n} x_ia_1$ + $\sum_{i=1}^{n} x_i^2a_2$ + ... + $\sum_{i=1}^{n} x_i^{m-1}a_{m-1}$ = $\sum_{i=1}^{n} y_i$
+na<sub>0</sub> + $\sum_{i=1}^{n} x_ia_1$ + $\sum_{i=1}^{n} x_i^2a_2$ + ... + $\sum_{i=1}^{n} x_i^{m-1}a_{m-1}$ = $\sum_{i=1}^{n} y_i$
+
 $\sum_{i=1}^{n} x_ia_0$ + $\sum_{i=1}^{n} x_i^2a_1$ + $\sum_{i=1}^{n} x_i^3a_2$ + ... + $\sum_{i=1}^{n} x_i^{m}a_{m-1}$ = $\sum_{i=1}^{n} x_iy_i$
+
 .
+
 .
+
 .
+
 $\sum_{i=1}^{n} x_{m-1}a_0$ + $\sum_{i=1}^{n} x_m^2a_1$ + $\sum_{i=1}^{n} x_{m+1}a_2$ + ... + $\sum_{i=1}^{n} x_i^{2m-2}a_{m-1}$ = $\sum_{i=1}^{n} x_{m-1}y_i$
 
 #### Polynomial Equation Code
