@@ -1501,7 +1501,7 @@ $\sum_{i=1}^{n} x_ia_0$ + $\sum_{i=1}^{n} x_i^2a_1$ + $\sum_{i=1}^{n} x_i^3a_2$ 
 
 .
 
-$\sum_{i=1}^{n} x_{m-1}a_0$ + $\sum_{i=1}^{n} x_m^2a_1$ + $\sum_{i=1}^{n} x_{m+1}a_2$ + ... + $\sum_{i=1}^{n} x_i^{2m-2}a_{m-1}$ = $\sum_{i=1}^{n} x_{m-1}y_i$
+$\sum_{i=1}^{n} x_{m-1}a_0$ + $\sum_{i=1}^{n} x_m^2a_1$ + $\sum_{i=1}^{n} x_{m+1}a_2$ + ... + $\sum_{i=1}^{n} x_i^{2m-2}a_{m-1}$ = $\sum_{i=1}^{n} x_i^{m-1}y_i$
 
 #### Polynomial Equation Code
 ```cpp
