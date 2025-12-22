@@ -48,6 +48,11 @@
     - [Code](#linear-equation-code)
     - [Input](#linear-equation-input)
     - [Output](#linear-equation-output)
+  - [Transcendental Equation](#transcendental-equation)
+    - [Theory](#transcendental-equation-theory)
+    - [Code](#transcendental-equation-code)
+    - [Input](#transcendental-equation-input)
+    - [Output](#transcendental-equation-output)
 - [Newton's Interpolation](#newtons-interpolation)
   - [Newton's Forward Interpolation](#newtons-forward-interpolation)
     - [Theory](#newtons-forward-interpolation-theory)
@@ -1286,11 +1291,11 @@ $\frac{∂Q}{∂b}$ = $\sum_{i=1}^{n}$ 2*(y<sub>i</sub> - a - bx<sub>i</sub>)*(-
 
 Combining equation (1) and (2) we get,
 
-b = $\frac{n∑xiyi - ∑xi∑yi}{n∑xi^2 - (∑xi)^2}$
+b = $\frac{n∑x_iy_i - ∑x_i∑y_i}{n∑x_i^2 - (∑x_i)^2}$
 
 From (1) we get,
 
-a = $\frac{∑yi - b∑xi}{n}$
+a = $\frac{∑y_i - b∑x_i}{n}$
 
 #### Linear Equation Code
 ```cpp
@@ -1362,6 +1367,89 @@ y = 4.00735 + 0.889706x
 
 y = -0.226447 + 0.938787x
 ```
+
+### Transcendental Equation
+#### Transcendental Equation Theory
+We consider the transcendental equation,
+
+y = ax<sup>b</sup>
+
+By taking ln on both sides, we get
+
+lny = lna + blnx
+Let lny = y, lna = a, x = lnx
+
+Comparing it with the linear equation y = a + bx and applying linear regression we get, 
+
+b = $\frac{n∑lnx_ilny_i - ∑lnx_i∑lny_i}{n∑lnx_i^2 - (∑lnx_i)^2}$ and lna = $\frac{∑lny_i - b∑lnx_i}{n}$ = R
+and a = e<sup>R</sup>
+
+#### Transcendental Equation Code
+```cpp
+#include <iostream>
+#include <bits/stdc++.h>
+#include <fstream>
+#include <math.h>
+
+using namespace std;
+
+int main()
+{
+    int n;
+    //cin >> n;
+
+    ifstream infile("input.txt");
+    ofstream outfile("output.txt");
+    double sumx = 0;
+    double sumy = 0;
+    double sumxy = 0;
+    double sumx2 = 0;
+
+    while(infile >> n)
+    {
+        for(int i = 0; i < n; i++)
+        {
+            double x, y;
+            //cin >> x >> y;
+            infile >> x >> y;
+            sumx += log(x);
+            sumy += log(y);
+            sumxy += log(x) * log(y);
+            sumx2 += log(x) * log(x);
+        }
+
+        double b = (n*sumxy - sumx*sumy) / (n*sumx2 - sumx*sumx);
+        double a = (sumy - b*sumx) / n;
+        double A = exp(a);
+
+        ostringstream os;
+        os << "y = " << A << "x^" << b << endl;
+        cout << os.str();
+        outfile << os.str();
+    }
+
+    outfile.close();
+    infile.close();
+}
+```
+
+#### Transcendental Equation Input
+```
+6
+2.5 18.5
+3.0 22.0
+4.5 30.5
+5.0 35.0
+6.5 42.5
+7 48.0
+```
+
+#### Transcendental Equation Output
+```
+y = 8.11299x^0.898913
+```
+
+
 ## Newton's Interpolation
 Interpolation is referred to as the technique to find the value of a function at a point that lies between two unknown points. It allows us a to construct a function from the given known data points and find out the values of the function at the intermediate data points. There are several methods of interpolation :
 - Newton's Forward Interpolation
