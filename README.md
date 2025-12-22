@@ -1857,23 +1857,14 @@ The Forward Interpolation Differentiation Method is used when the value of the d
 After constructing the interpolation polynomial, it is differentiated to obtain approximate formulas for the first and second derivatives.
 
 Forward Interpolation Formula: 
-f(x) = y0
-     + u Δy0
-     + u(u−1)/2! Δ²y0
-     + u(u−1)(u−2)/3! Δ³y0
-     + ... 
+f(x) = y0 + u Δy0 + u(u−1)/2! Δ²y0 + u(u−1)(u−2)/3! Δ³y0 + ... 
+
 where:
 u = (x − x0) / h.
 
 First Derivative Formula after differentiating the forward interpolation polynomial and evaluating at x = x0 (u = 0):
 
-f'(x0) ≈ (1/h) [
-    Δy0
-  − (1/2) Δ²y0
-  + (1/3) Δ³y0
-  − (1/4) Δ⁴y0
-  + ...
-].
+f'(x0) ≈ (1/h) [ Δy0 − (1/2) Δ²y0 + (1/3) Δ³y0 − (1/4) Δ⁴y0  + ...].
 
 
 #### Differentiation with Forward Interpolation Code
@@ -1954,22 +1945,12 @@ The Backward Interpolation Differentiation Method is used when the value of the 
 It provides better accuracy near the upper end of the tabulated values.
 
 Backward Interpolation Formula: 
-f(x) = yn
-     + u ∇yn
-     + u(u+1)/2! ∇²yn
-     + u(u+1)(u+2)/3! ∇³yn
-     + ... 
+f(x) = yn + u ∇yn + u(u+1)/2! ∇²yn + u(u+1)(u+2)/3! ∇³yn + ...  
 where:
 u = (x − xn) / h.
 
 First Derivative Formula after differentiating and evaluating at x = xn (u = 0):
-f'(xn) ≈ (1/h) [
-    ∇yn
-  + (1/2) ∇²yn
-  + (1/3) ∇³yn
-  + (1/4) ∇⁴yn
-  + ...
-].
+f'(xn) ≈ (1/h) [ ∇yn + (1/2) ∇²yn + (1/3) ∇³yn + (1/4) ∇⁴yn + ...].
 
 #### Differentiation with Backward Interpolation Code
 ```cpp
