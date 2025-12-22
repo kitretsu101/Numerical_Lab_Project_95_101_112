@@ -1856,7 +1856,7 @@ The Forward Interpolation Differentiation Method is used when the value of the d
 
 After constructing the interpolation polynomial, it is differentiated to obtain approximate formulas for the first and second derivatives.
 
-Forward Interpolation Formula
+Forward Interpolation Formula: 
 f(x) = y0
      + u Δy0
      + u(u−1)/2! Δ²y0
@@ -1873,15 +1873,8 @@ f'(x0) ≈ (1/h) [
   + (1/3) Δ³y0
   − (1/4) Δ⁴y0
   + ...
-]
+].
 
-Second Derivative Formula
-f''(x0) ≈ (1/h²) [
-    Δ²y0
-  − Δ³y0
-  + (11/12) Δ⁴y0
-  − ...
-]
 
 #### Differentiation with Forward Interpolation Code
 ```cpp
@@ -1941,7 +1934,7 @@ int main() {
 1 2 4 8 16
 ```
 
-#### Differentiation with Forward Interpolation Input
+#### Differentiation with Forward Interpolation Output
 ```
 Forward Difference Table:
 1.000000 1.000000 1.000000 1.000000 1.000000 
@@ -1952,5 +1945,99 @@ Forward Difference Table:
 
 First derivative at x = 0.000000 is 0.583333
 ```
+
+### Differentiation with Backward Interpolation
+#### Differentiation with Backward Interpolation Theory
+
+The Backward Interpolation Differentiation Method is used when the value of the derivative is required near the end of the data table. This method is based on Newton’s Backward Interpolation Formula, which expresses the function in terms of backward differences.
+
+It provides better accuracy near the upper end of the tabulated values.
+
+Backward Interpolation Formula: 
+f(x) = yn
+     + u ∇yn
+     + u(u+1)/2! ∇²yn
+     + u(u+1)(u+2)/3! ∇³yn
+     + ... 
+where:
+u = (x − xn) / h.
+
+First Derivative Formula after differentiating and evaluating at x = xn (u = 0):
+f'(xn) ≈ (1/h) [
+    ∇yn
+  + (1/2) ∇²yn
+  + (1/3) ∇³yn
+  + (1/4) ∇⁴yn
+  + ...
+].
+
+#### Differentiation with Backward Interpolation Code
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ifstream fin("input.txt");
+    ofstream fout("output.txt");
+
+    int n;
+    fin >> n;
+
+    vector<double> x(n), y(n);
+    for (int i = 0; i < n; i++) fin >> x[i];
+    for (int i = 0; i < n; i++) fin >> y[i];
+
+    double h = x[1] - x[0];
+
+    vector<vector<double>> diff(n, vector<double>(n));
+    for (int i = 0; i < n; i++)
+        diff[i][0] = y[i];
+
+    for (int j = 1; j < n; j++)
+        for (int i = n - 1; i >= j; i--)
+            diff[i][j] = diff[i][j - 1] - diff[i - 1][j - 1];
+
+    fout << fixed << setprecision(6);
+    fout << "Backward Difference Table:\n";
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j <= i; j++)
+            fout << diff[i][j] << " ";
+        fout << "\n";
+    }
+
+    double derivative = 0;
+    for (int i = 1; i < n; i++)
+        derivative += diff[n - 1][i] / i;
+
+    derivative /= h;
+
+    fout << "\nFirst derivative at x = " << x[n - 1]
+         << " is " << derivative << endl;
+
+    return 0;
+}
+```
+
+#### Differentiation with Backward Interpolation Input
+```
+6
+1 2 3 4 5 6
+1 8 27 64 125 216
+```
+
+#### Differentiation with Backward Interpolation Output
+```
+Backward Difference Table:
+1.000000 
+8.000000 7.000000 
+27.000000 19.000000 12.000000 
+64.000000 37.000000 18.000000 6.000000 
+125.000000 61.000000 24.000000 6.000000 0.000000 
+216.000000 91.000000 30.000000 6.000000 0.000000 0.000000 
+
+First derivative at x = 6.000000 is 108.000000
+```
+
+
 
 
